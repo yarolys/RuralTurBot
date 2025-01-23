@@ -17,7 +17,7 @@ async def main():
         admin_panel_router,
     )
     r = await bot.get_me()
-    logger.info(f"Бот запущен: https://t/me/{r.username}")
+    logger.info(f"Бот запущен: https://t.me/{r.username}")
     await dp.start_polling(bot)
 
 if __name__ == '__main__':
