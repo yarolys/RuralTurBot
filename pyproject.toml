@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "ruralturbot"
+version = "0.1.0"
+description = ""
+authors = ["yarolys <lysov.yaroslav.r@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+aiogram = "^3.17.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
