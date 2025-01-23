@@ -1,11 +1,11 @@
 from aiogram import F, Router
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
-from aiogram.filters import Command
 
-from src.config import BOT_ADMIN_ID, logger
-from src.utils.keyboard.admin import admin_panel_kb
+from src.config import logger
 from src.utils.filter import AdminRoleFilter
+from src.utils.keyboard.admin import admin_panel_kb
 
 router = Router()
 
