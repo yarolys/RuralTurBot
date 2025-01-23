@@ -1,6 +1,5 @@
 services:
   bot:
-    command: "python3 run.py"
     build: .
     env_file:
       - .env
