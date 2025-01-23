@@ -46,7 +46,7 @@ jobs:
       - name: ⚙️ Run deployment commands
         run: |
           ssh -o StrictHostKeyChecking=no ${{secrets.LOGIN}}@${{secrets.HOST}} \
-            "cd /home/yarolys/RuralTurBot && git pull && docker compose up --build -d"
+            "cd ${{ secrets.PROJECT_PATH }} && git pull && docker compose up --build -d"
 
       - name: ✅ Success notification
         if: success()
