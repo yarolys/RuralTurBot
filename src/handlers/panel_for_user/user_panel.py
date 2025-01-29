@@ -1,28 +1,23 @@
 from aiogram import Router
 from aiogram.types import CallbackQuery
+from aiogram.fsm.context import FSMContext
 
 from src.utils.keyboard.user import start_panel_kb
+from src.database.models.text_edit import EditableText
+from src.states.admin import EditTextState
+
 
 router = Router()
 
 
-@router.callback_query(lambda c: c.data == 'about_us')
-async def about_us_handler(callback_query: CallbackQuery):
-    new_text = (
-        '🌿 О нас\n\n'
-        'Мы — команда, стремящаяся создать уникальную платформу для всех любителей природы и уютного отдыха.\n\n'
-        'На "Деревенских приключениях" вы можете насладиться лучшими местами для проживания в окружении природы, вкусной местной кухней и увлекательными экскурсиями. Мы верим, что каждый заслуживает отдых, который наполняет силы и вдохновляет на новые подвиги.\n\n'
-        '🌍 Наши ценности:\n'
-        '1. Уют и комфорт для каждого гостя.\n'
-        '2. Чистота и природная красота.\n'
-        '3. Поддержка местных фермеров и производителей.\n'
-        '4. Искренность и доверие.\n\n'
-        'Мы рады каждому гостю и уверены, что ваше пребывание здесь будет незабываемым! 🌟'
-    )
-
-    if callback_query.message.text != new_text:
+@router.callback_query(lambda c: c.data == EditableText.content == 'about_us')
+async def about_us_handler(callback_query: CallbackQuery, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state == EditTextState.waiting_for_new_text:
+        return
+    if callback_query.message.text != 'about_us':
         await callback_query.message.edit_text(
-            new_text,
+            'about_us',
             reply_markup=start_panel_kb
         )
 
