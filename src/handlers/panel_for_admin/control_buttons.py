@@ -9,42 +9,42 @@ from src.states.admin import EditTextState
 
 router = Router()
 
-
-
 @router.message(F.text == "Управление текстами", AdminRoleFilter())
 async def show_texts_menu(message: types.Message):
-    button_ids = ['about_us', 'get_discount', 'contacts', 'accommodation', 'entertainment', 'local_food', 'excursions']
-    for identifier in button_ids:
-        editable_text = await DbEditableText.get_text(identifier)
-        if not editable_text:
-            # Если текста нет, создаем новый с пустым содержимым
-            await DbEditableText.update_text(identifier, "")
+    buttons = await DbEditableText.get_all_texts()
+    
+    if not buttons:
+        await message.answer("⚠️ Нет доступных кнопок для редактирования.")
+        return
 
-    await message.answer(
-        "Выберите текст для редактирования:",
-        reply_markup=start_panel_kb
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=button.name_button, callback_data=f"edit_{button.identifier}")]
+            for button in buttons
+        ]
     )
 
-@router.callback_query(F.data.in_(['about_us', 'get_discount', 'contacts', 'accommodation', 'entertainment', 'local_food', 'excursions']))
-async def start_editing_button_text(callback_query: types.CallbackQuery, state: FSMContext):
-    identifier = callback_query.data
+    await message.answer("Выберите кнопку для редактирования:", reply_markup=keyboard)
 
+
+@router.callback_query(F.data.startswith("edit_"))
+async def start_editing_button_text(callback_query: types.CallbackQuery, state: FSMContext):
+    identifier = callback_query.data.replace("edit_", "")
     editable_text = await DbEditableText.get_text(identifier)
     if not editable_text:
-        # Если текста нет, показываем сообщение
-        await callback_query.message.answer("Текст для этой кнопки еще не задан.")
+        await callback_query.answer("⚠️ Ошибка! Текст для этой кнопки не найден.", show_alert=True)
         return
-    
-    await callback_query.message.answer(
-        f"⚠️ *Внимание!*\n"
-        f"Вы находитесь в режиме редактирования кнопки: *{identifier}*\n\n"
+
+    await callback_query.message.edit_text(
+        f"⚠️ Внимание!*\n"
+        f"Вы находитесь в режиме редактирования кнопки: {editable_text.name_button}\n\n"
         f"Старый текст:\n\n"
         f"_{editable_text.content}_\n\n"
         f"Отправьте новый текст для этой кнопки или нажмите кнопку 'Отмена'.",
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[[InlineKeyboardButton(text="❌ Отмена", callback_data="cancel_editing")]]
         ),
-        parse_mode="Markdown"
+        parse_mode="HTML"
     )
 
     await state.set_state(EditTextState.waiting_for_new_text)
@@ -62,14 +62,12 @@ async def update_button_text(message: types.Message, state: FSMContext):
         return
 
     await DbEditableText.update_text(identifier, new_text)
-    await message.answer(f"✅ Текст кнопки {identifier} успешно обновлён!", parse_mode="Markdown")
+    await message.answer(f"✅ Текст кнопки *{identifier}* успешно обновлён!", parse_mode="Markdown")
     await state.clear()
 
 
 @router.callback_query(F.data == "cancel_editing")
 async def cancel_editing(callback_query: types.CallbackQuery, state: FSMContext):
-    await callback_query.message.answer(
-        "🚫 Редактирование отменено.",
-        reply_markup=start_panel_kb  
-    )
+    await callback_query.message.edit_text("🚫 Редактирование отменено.", reply_markup=start_panel_kb)
     await state.clear()
+    await callback_query.answer()
