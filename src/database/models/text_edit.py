@@ -9,9 +9,10 @@ class EditableText(Base):
     __tablename__ = "editable_texts"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    name_button: Mapped[str] = mapped_column(nullable=False)
     identifier: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     content: Mapped[str] = mapped_column(nullable=False)
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now)  # без использования timezone
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)  
     updated_at: Mapped[datetime] = mapped_column(
         default=datetime.now,  
         onupdate=datetime.now,  
@@ -24,6 +25,7 @@ class EditableText(Base):
             text = text_record.scalars().first()
             return EditableTextSchema(
                 id=text.id,
+                name_button=text.name_button,
                 identifier=text.identifier,
                 content=text.content,
                 created_at=text.created_at,
@@ -44,3 +46,9 @@ class EditableText(Base):
                 session.add(new_record)
 
             await session.commit()
+            
+    @classmethod
+    async def get_all_texts(cls):
+        async with async_session_maker() as session:
+            result = await session.execute(select(cls))
+            return result.scalars().all()
