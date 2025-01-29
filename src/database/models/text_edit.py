@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from sqlalchemy import BigInteger, String, Text, select
 from sqlalchemy.orm import Mapped, mapped_column
 from src.schemas import EditableTextSchema
@@ -10,11 +10,11 @@ class EditableText(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     identifier: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
-    content: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
+    content: Mapped[str] = mapped_column(nullable=False)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)  # без использования timezone
     updated_at: Mapped[datetime] = mapped_column(
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=datetime.now,  
+        onupdate=datetime.now,  
     )
 
     @classmethod
@@ -33,11 +33,14 @@ class EditableText(Base):
     @classmethod
     async def update_text(cls, identifier: str, new_content: str):
         async with async_session_maker() as session:
-            text_record = await session.execute(select(cls).where(cls.identifier == identifier))
-            text = text_record.scalars().first()
-            if text:
-                text.content = new_content
-                text.updated_at = datetime.now(timezone.utc)
+            result = await session.execute(select(cls).where(cls.identifier == identifier))
+            text_record = result.scalars().first()
+
+            if text_record:
+                text_record.content = new_content
+                text_record.updated_at = datetime.now()
             else:
-                session.add(cls(identifier=identifier, content=new_content))
+                new_record = cls(identifier=identifier, content=new_content)
+                session.add(new_record)
+
             await session.commit()
