@@ -18,6 +18,7 @@ class UserSchema(BaseModel):
 
 class EditableTextSchema(BaseModel):
     id: int
+    name_button: str
     identifier: str  
     content: str
     created_at: datetime
