@@ -7,6 +7,9 @@ from src.handlers import (
     user_panel_router,
     admin_panel_router,
     control_buttons_router,
+    tour_panel_router,
+    user_list_router,
+    accomodation_buttons_router,
 )
 
 
@@ -17,6 +20,9 @@ async def main():
         user_panel_router,
         admin_panel_router,
         control_buttons_router,
+        tour_panel_router,
+        user_list_router,
+        accomodation_buttons_router,
     )
     r = await bot.get_me()
     logger.info(f"Бот запущен: https://t.me/{r.username}")
