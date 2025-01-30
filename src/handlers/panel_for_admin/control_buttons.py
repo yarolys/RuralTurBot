@@ -25,6 +25,7 @@ async def show_texts_menu(message: types.Message):
     )
 
     await message.answer("Выберите кнопку для редактирования:", reply_markup=keyboard)
+    await message.delete()
 
 
 @router.callback_query(F.data.startswith("edit_"))
@@ -62,7 +63,8 @@ async def update_button_text(message: types.Message, state: FSMContext):
         return
 
     await DbEditableText.update_text(identifier, new_text)
-    await message.answer(f"✅ Текст кнопки *{identifier}* успешно обновлён!", parse_mode="Markdown")
+    await message.answer(f"✅ Текст кнопки *{identifier}* успешно обновлён!", parse_mode="HTML",
+                         reply_markup=start_panel_kb)
     await state.clear()
 
 
