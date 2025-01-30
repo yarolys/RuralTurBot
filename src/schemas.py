@@ -1,6 +1,6 @@
 import enum
 from datetime import datetime
-
+from typing import Optional
 from pydantic import BaseModel, HttpUrl
 
 
@@ -13,6 +13,7 @@ class KbButtonSchema(BaseModel):
 class UserSchema(BaseModel):
     id: int
     full_name: str
+    username: str
     created_at: datetime
 
 
@@ -21,6 +22,25 @@ class EditableTextSchema(BaseModel):
     name_button: str
     identifier: str  
     content: str
+    created_at: datetime
+    updated_at: datetime
+
+
+class TourSchema(BaseModel):
+    id: int
+    name: str
+    description: str
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class AccomodationSchema(BaseModel):
+    id: int
+    name: str
+    description: str
     created_at: datetime
     updated_at: datetime
 
