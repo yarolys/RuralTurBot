@@ -9,7 +9,9 @@ from src.database.connection import Base
 from src.config import DATABASE_URL
 
 from src.database.models.users import User # noqa
-from src.database.models.text_edit import EditableText
+from src.database.models.accomodationn import Accomodation # noqa
+from src.database.models.tour import Tour  # noqa
+from src.database.models.text_edit import EditableText # noqa
 
 
 config = context.config
