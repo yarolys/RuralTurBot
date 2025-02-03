@@ -61,10 +61,16 @@ async def update_button_text(message: types.Message, state: FSMContext):
     if not new_text:
         await message.answer("⚠️ Новый текст не может быть пустым. Попробуйте снова.")
         return
-
+    editable_text = await DbEditableText.get_text(identifier)
+    if not editable_text:
+        await message.answer("⚠️ Ошибка! Текст для этой кнопки не найден.")
+        return
     await DbEditableText.update_text(identifier, new_text)
-    await message.answer(f"✅ Текст кнопки *{identifier}* успешно обновлён!", parse_mode="HTML",
-                         reply_markup=start_panel_kb)
+    await message.answer(
+        f"✅ Текст кнопки {editable_text.name_button} успешно обновлён!",
+        parse_mode="HTML",
+        reply_markup=start_panel_kb
+    )
     await state.clear()
 
 
