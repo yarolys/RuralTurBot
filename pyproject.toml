@@ -26,6 +26,8 @@ pydantic = "2.10.5"
 pydantic-core = "2.27.2"
 typing-extensions = "4.12.2"
 yarl = "1.18.3"
+sqlalchemy = "^2.0.37"
+aiosqlite = "^0.21.0"
 
 
 [build-system]
