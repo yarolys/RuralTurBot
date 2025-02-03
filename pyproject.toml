@@ -68,6 +68,7 @@ tomlkit = "0.13.2"
 trove-classifiers = "2025.1.15.22"
 urllib3 = "2.3.0"
 virtualenv = "20.29.1"
+datetime = "^5.5"
 
 
 [build-system]
