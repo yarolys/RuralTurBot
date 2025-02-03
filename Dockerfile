@@ -8,6 +8,4 @@ RUN poetry install --no-root
 RUN mkdir -p /RuralTurBot/logs && chmod -R 777 /RuralTurBot/logs
 COPY run.py .
 COPY src ./src
-COPY alembic.ini .
-COPY migrations ./migrations
 CMD ["python3", "run.py"]
