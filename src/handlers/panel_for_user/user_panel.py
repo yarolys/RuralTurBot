@@ -4,7 +4,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.context import FSMContext
 
 from src.utils.keyboard.user import start_panel_kb, back_to_excursions, back_to_main
-from src.database.models import DbEditableText, DbTour
+from src.database.models import DbEditableText, DbTour, DbAccomodation
 from src.states.admin import EditTextState
 
 
@@ -47,16 +47,52 @@ async def contacts_handler(callback_query: CallbackQuery):
         )
 
 
+back_to_accommodation = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="🔙 Вернуться", callback_data="accommodation")]
+    ]
+)
+
+
 @router.callback_query(lambda c: c.data == 'accommodation')
-async def accommodation_handler(callback_query: CallbackQuery):
-    editable_text = await DbEditableText.get_text('accommodation')  
-    if not editable_text:  
-        return  
-    if callback_query.message.text != editable_text.content:  
+async def accommodation_handler(callback_query: types.CallbackQuery):
+    """Обработчик кнопки 'accommodation', выводит список точек проживания с кнопками."""
+    editable_text = await DbEditableText.get_text('accommodation')
+    if not editable_text:
+        return
+
+    accommodations = await DbAccomodation.get_all_accomodation()  
+    if not accommodations:
+        await callback_query.message.edit_text("⚠️ Нет доступных точек проживания.")
+        return
+    builder = InlineKeyboardBuilder()
+    for accommodation in accommodations:
+        builder.row(InlineKeyboardButton(
+            text=accommodation.name,
+            callback_data=f"view_accommodation_{accommodation.id}"
+        ))
+    builder.row(InlineKeyboardButton(text="🔙 Вернуться", callback_data="back_to_main"))
+
+    await callback_query.message.edit_text(
+        editable_text.content,
+        reply_markup=builder.as_markup()
+    )
+
+
+@router.callback_query(F.data.startswith("view_accommodation_"))
+async def view_accommodation(callback_query: types.CallbackQuery):
+    """Просмотр выбранной точки проживания с кнопкой для возврата."""
+    accommodation_id = int(callback_query.data.replace("view_accommodation_", ""))
+    accommodation = await DbAccomodation.get_accomodation(accommodation_id)
+
+    if accommodation:
         await callback_query.message.edit_text(
-            editable_text.content,  
-            reply_markup=start_panel_kb
+            f"🏠 Название: {accommodation.name}\n"
+            f"📖 Описание: {accommodation.description}",
+            reply_markup=back_to_accommodation
         )
+    else:
+        await callback_query.answer("⚠️ Точка проживания не найдена.")
 
 
 @router.callback_query(lambda c: c.data == 'entertainment')
