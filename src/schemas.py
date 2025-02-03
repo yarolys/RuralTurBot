@@ -44,3 +44,18 @@ class AccomodationSchema(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+
+class EntertainmentSchema(BaseModel):
+    id: int
+    name: str
+    description: str
+    created_at: datetime
+    updated_at: datetime
+
+
+class LocalFoodSchema(BaseModel):
+    id: int
+    name: str
+    description: str
+    created_at: datetime
+    updated_at: datetime
