@@ -24,3 +24,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  migrations:
+    image: ruralturbot-bot-1
+    env_file: .env
+    command: alembic upgrade head
+    depends_on:
+      postgres:
+        condition: service_healthy
