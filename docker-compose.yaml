@@ -1,12 +1,12 @@
 services:
-  bot:
+  ruralturbot:
     env_file: .env
     build: .
     restart: always
     volumes:
       - /home/yarolys/Programming/RuralTurBot/logs:/app/logs
-
-  postgres:
+    command: sh -c "alembic upgrade head && python3 run.py"
+  ruralturbotdb:
     image: postgres:15
     container_name: postgres
     restart: always
