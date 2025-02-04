@@ -1,4 +1,4 @@
-"""Добавлена entertainment table
+"""Added entertainment table
 
 Revision ID: 6791cc210fde
 Revises: 127fb9b4eb5d

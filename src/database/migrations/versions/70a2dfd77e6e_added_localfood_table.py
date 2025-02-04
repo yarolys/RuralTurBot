@@ -1,4 +1,4 @@
-"""Добавлена localfood table
+"""Added localfood table
 
 Revision ID: 70a2dfd77e6e
 Revises: 6791cc210fde
