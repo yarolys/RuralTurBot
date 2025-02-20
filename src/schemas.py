@@ -13,7 +13,7 @@ class KbButtonSchema(BaseModel):
 class UserSchema(BaseModel):
     id: int
     full_name: str
-    username: str
+    username: Optional[str] = None
     created_at: datetime
 
 
